@@ -29,6 +29,32 @@ usage: recover.py [-h] --source-bucket-marker SOURCE_BUCKET_MARKER
                   [--guess-content-type] [--key-regex KEY_REGEX]
                   [--rados-pool-name RADOS_POOL_NAME]
                   [--target-acl TARGET_ACL]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --source-bucket-marker SOURCE_BUCKET_MARKER
+                        Source bucket marker
+  --source-bucket-name SOURCE_BUCKET_NAME
+                        Source bucket name
+  --source-bucket-profile SOURCE_BUCKET_PROFILE
+                        Profile to use for source bucket
+  --target-bucket-name TARGET_BUCKET_NAME
+                        Target bucket name
+  --target-bucket-profile TARGET_BUCKET_PROFILE
+                        Profile to use for target bucket
+  --ceph-conf CEPH_CONF
+                        Location of ceph.conf file
+  --delete-after-copy   WARNING: destructive operation, will delete source
+                        object after copy
+  --dry-run             Dry Run
+  --guess-content-type  Reset the content type using best guess from key
+                        extension
+  --key-regex KEY_REGEX
+                        Only process keys matching regex
+  --rados-pool-name RADOS_POOL_NAME
+                        Source rados pool
+  --target-acl TARGET_ACL
+                        ACL to assign to target copy
 ```
 
 ```

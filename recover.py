@@ -19,9 +19,9 @@ class Rados:
         self.cluster = CephRados(conffile=ceph_conf)
         self.cluster.connect()
 
-    def list_objects(self, key_regex):
+    def list_objects(self, rados_pool_name, key_regex):
         filter = compile("{}_(?!({}))({})".format(self.bucket_marker, "|".join(self.ignored_prefixes), args.key_regex))
-        with self.cluster.open_ioctx('default.rgw.buckets.data') as ioctx:
+        with self.cluster.open_ioctx(rados_pool_name) as ioctx:
             for obj in ioctx.list_objects():
                 match = filter.match(obj.key)
                 if match is None:
@@ -63,17 +63,21 @@ mimetypes.init()
 
 #
 parser = ArgumentParser()
+
 parser.add_argument("--source-bucket-marker", required=True, help="Source bucket marker")
 parser.add_argument("--source-bucket-name", required=True, help="Source bucket name")
-parser.add_argument("--target-bucket-name", required=True, help="Target bucket name")
 parser.add_argument("--source-bucket-profile", default="default", help="Profile to use for source bucket")
+parser.add_argument("--target-bucket-name", required=True, help="Target bucket name")
 parser.add_argument("--target-bucket-profile", default="default", help="Profile to use for target bucket")
+
+parser.add_argument("--ceph-conf", default="/etc/ceph/ceph.conf", help="Location of ceph.conf file")
+parser.add_argument("--delete-after-copy", action='store_true', help="WARNING: destructive operation, will delete source object after copy")
 parser.add_argument("--dry-run", action='store_true', help="Dry Run")
 parser.add_argument("--guess-content-type", action='store_true', help="Reset the content type using best guess from key extension")
-parser.add_argument("--target-acl", default=False, help="ACL to assign to target copy")
 parser.add_argument("--key-regex", default=".*", help="Only process keys matching regex")
-parser.add_argument("--delete-after-copy", action='store_true', help="WARNING: destructive operation, will delete source object after copy")
-parser.add_argument("--ceph-conf", default="/etc/ceph/ceph.conf", help="Location of ceph.conf file")
+parser.add_argument("--rados-pool-name", default='default.rgw.buckets.data', help="Source rados pool")
+parser.add_argument("--target-acl", default=False, help="ACL to assign to target copy")
+
 args = parser.parse_args()
 
 #
@@ -101,7 +105,7 @@ logging.info('Dry Run: {}'.format(dry_run or False))
 logging.info('Delete After Copy: {}'.format(delete_after_copy or False))
 
 logging.info('searching...')
-for key in rados.list_objects(args.key_regex):
+for key in rados.list_objects(args.rados_pool_name, args.key_regex):
     reference = {
         'Bucket': args.source_bucket_name,
         'Key': key

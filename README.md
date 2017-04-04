@@ -8,8 +8,7 @@ This will iterate over all rados objects in a pool and copy them via radosgw to 
 
 * python3
 * ceph + librados + python3 bindings
-* S3 credentials stored in ~/.aws/credentials
-* S3 server config stored in ~/.aws/config
+* [S3 config stored in ~/.aws/credentials and ~/.aws/config](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html#cli-config-files)
 
 ### Install Dependencies
 
